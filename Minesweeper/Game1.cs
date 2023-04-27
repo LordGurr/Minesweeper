@@ -55,6 +55,8 @@ namespace Minesweeper
         private Vector2Int previousMouseScaled = new Vector2Int(0, 0);
         private Random rng = new Random();
 
+        private Texture2D smiley;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -178,6 +180,8 @@ namespace Minesweeper
             Input.setCameraStuff(camera);
             deltaTime = new Stopwatch();
             deltaTime.Start();
+            position = arrayTiles[arrayTiles.GetLength(0) / 2, arrayTiles.GetLength(1) / 2].rectangle.Location.ToVector2();
+            smiley = Content.Load<Texture2D>("minesweeperSmiley");
             // TODO: use this.Content to load your game content here
         }
 
@@ -247,51 +251,66 @@ namespace Minesweeper
                     drawRectPos = !drawRectPos;
                 }
                 bool buttonClicked = false;
-                if (next.rectangle.Contains(Input.myMousePos) || fullscreen.rectangle.Contains(Input.myMousePos) || clear.rectangle.Contains(Input.myMousePos) || play.rectangle.Contains(Input.myMousePos) || reset.rectangle.Contains(Input.myMousePos) || uncapped.rectangle.Contains(Input.myMousePos))
+                if (reset.Clicked())
                 {
+                    //ClearAll();
+                    //position = new Vector2(, _graphics.PreferredBackBufferHeight / 2));
+                    position = arrayTiles[arrayTiles.GetLength(0) / 2, arrayTiles.GetLength(1) / 2].rectangle.Location.ToVector2();
+                    camera.Zoom = 1;
+                    Input.SetScrollWheel(0);
+                    playing = false;
                     buttonClicked = true;
-                    if (next.Clicked() && !iterating && !playing)
+                    for (int i = 0; i < knapparna.Count; i++)
                     {
-                        StartThreadIterate();
-                    }
-                    if (clear.Clicked())
-                    {
-                        ClearAll();
-                        playing = false;
+                        knapparna[i].Reset(false);
                     }
 
-                    if (reset.Clicked())
+                    int numberOfBombs = knapparna.Count / 10;
+                    for (int i = 0; i < numberOfBombs; i++)
                     {
-                        ClearAll();
-                        position = new Vector2(_graphics.PreferredBackBufferWidth / 2, _graphics.PreferredBackBufferHeight / 2);
-                        camera.Zoom = 1;
-                        Input.SetScrollWheel(0);
-                        playing = false;
-                    }
-
-                    // TODO: Add your update logic here
-                    if (fullscreen.Clicked())
-                    {
-                        //fullscreen.setPos(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - buttonStart.rectangle.Width, 0);
-                        //_graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-                        //_graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-                        _graphics.IsFullScreen = !_graphics.IsFullScreen;
-                        _graphics.ApplyChanges();
-                        monitorSwitch = true;
-                    }
-                    if (play.Clicked())
-                    {
-                        playing = !playing;
-                    }
-                    if (uncapped.Clicked())
-                    {
-                        updateUncapped = !updateUncapped;
+                        knapparna[rng.Next(knapparna.Count)].SetClicked(true);
                     }
                 }
-                if (Input.GetButtonDown(Keys.F11) || Input.GetButtonDown(Keys.Space) || Input.GetButtonDown(Keys.Enter))
+                if (reset.rectangle.Contains(Input.myMousePos))
                 {
                     buttonClicked = true;
-                    if (Input.GetButtonDown(Keys.F11))
+                }
+                //if (next.rectangle.Contains(Input.myMousePos) || fullscreen.rectangle.Contains(Input.myMousePos) || clear.rectangle.Contains(Input.myMousePos) || play.rectangle.Contains(Input.myMousePos) || reset.rectangle.Contains(Input.myMousePos) || uncapped.rectangle.Contains(Input.myMousePos))
+                //{
+                //    buttonClicked = true;
+                //    if (next.Clicked() && !iterating && !playing)
+                //    {
+                //        StartThreadIterate();
+                //    }
+                //    if (clear.Clicked())
+                //    {
+                //        ClearAll();
+                //        playing = false;
+                //    }
+
+                //    // TODO: Add your update logic here
+                //    if (fullscreen.Clicked())
+                //    {
+                //        //fullscreen.setPos(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - buttonStart.rectangle.Width, 0);
+                //        //_graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                //        //_graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+                //        _graphics.IsFullScreen = !_graphics.IsFullScreen;
+                //        _graphics.ApplyChanges();
+                //        monitorSwitch = true;
+                //    }
+                //    if (play.Clicked())
+                //    {
+                //        playing = !playing;
+                //    }
+                //    if (uncapped.Clicked())
+                //    {
+                //        updateUncapped = !updateUncapped;
+                //    }
+                //}
+                if (Input.GetButtonDown(Keys.F11) || fullscreen.rectangle.Contains(Input.myMousePos) /*|| Input.GetButtonDown(Keys.Space) || Input.GetButtonDown(Keys.Enter)*/)
+                {
+                    buttonClicked = true;
+                    if (Input.GetButtonDown(Keys.F11) || fullscreen.Clicked())
                     {
                         //fullscreen.setPos(GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width - buttonStart.rectangle.Width, 0);
                         //_graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
@@ -393,6 +412,13 @@ namespace Minesweeper
                                     }
                                     if (BoardCleared())
                                     {
+                                        for (int j = 0; j < knapparna.Count; j++)
+                                        {
+                                            if (knapparna[j].alive)
+                                            {
+                                                knapparna[j].SetTex(smiley);
+                                            }
+                                        }
                                     }
                                     break;
                                 }
@@ -431,6 +457,16 @@ namespace Minesweeper
                                 if (knapparna[i].clicked && amountOfFlags == TilesBredvidCountNew(new Vector2Int(knapparna[i].xpos, knapparna[i].ypos)))
                                 {
                                     CheckNeighbourTiles(new Vector2Int(knapparna[i].xpos, knapparna[i].ypos));
+                                }
+                                if (BoardCleared())
+                                {
+                                    for (int j = 0; j < knapparna.Count; j++)
+                                    {
+                                        if (knapparna[j].alive)
+                                        {
+                                            knapparna[j].SetTex(smiley);
+                                        }
+                                    }
                                 }
                                 break;
                             }
@@ -992,11 +1028,11 @@ namespace Minesweeper
             _spriteBatch.End();
             _spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp);
             fullscreen.Draw(_spriteBatch, font);
-            next.Draw(_spriteBatch, font);
+            reset.Draw(_spriteBatch, font);
+            /*next.Draw(_spriteBatch, font);
             play.Draw(_spriteBatch, font);
             clear.Draw(_spriteBatch, font);
-            reset.Draw(_spriteBatch, font);
-            uncapped.Draw(_spriteBatch, font);
+            uncapped.Draw(_spriteBatch, font);*/
             float size = 1.6f;
 
             if (debugging)

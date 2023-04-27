@@ -7,14 +7,14 @@ namespace Minesweeper
     internal class Button
     {
         public Rectangle rectangle { protected set; get; }
-        public Texture2D Texture { protected set; get; }
+        public Texture2D myTexture { protected set; get; }
         public string Text { protected set; get; }
         public bool pressed { protected set; get; }
 
         public Button(Rectangle _rectangle, Texture2D _texture, string _text)
         {
             rectangle = _rectangle;
-            Texture = _texture;
+            myTexture = _texture;
             Text = _text;
             pressed = false;
         }
@@ -22,7 +22,7 @@ namespace Minesweeper
         public Button(Rectangle _rectangle, Texture2D _texture)
         {
             rectangle = _rectangle;
-            Texture = _texture;
+            myTexture = _texture;
             Text = string.Empty;
             pressed = false;
         }
@@ -88,7 +88,7 @@ namespace Minesweeper
         {
             //setPos(rectangle.X - (int)offset.X, rectangle.Y - (int)offset.Y);
             //_spriteBatch.Draw(texture, new Rectangle(rectangle.X - (int)offset.X, rectangle.Y - (int)offset.Y, rectangle.Width, rectangle.Height), Color.White);
-            _spriteBatch.Draw(Texture, rectangle, Color.White);
+            _spriteBatch.Draw(myTexture, rectangle, Color.White);
             Vector2 size = font.MeasureString(Text);
             _spriteBatch.DrawString(font, Text, new Vector2(rectangle.X + rectangle.Width / 2 /*- offset.X*/, rectangle.Y + rectangle.Height / 2 /*- offset.Y*/), Color.White, 0, new Vector2(size.X / 2, size.Y / 2), 2, SpriteEffects.None, 1);
         }

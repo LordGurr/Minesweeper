@@ -44,9 +44,17 @@ namespace Minesweeper
             flagged = false;
         }
 
+        public void Reset(bool _alive)
+        {
+            myTexture = deadTex;
+            flagged = false;
+            clicked = false;
+            alive = _alive;
+        }
+
         public void SetToNumberTex(int numberOfMines)
         {
-            Texture = numberTexture[numberOfMines];
+            myTexture = numberTexture[numberOfMines];
         }
 
         public bool Clicked(Vector2 mousePos, int numberOfMines)
@@ -58,7 +66,7 @@ namespace Minesweeper
                     if (alive)
                     {
                         //Texture = aliveTex;
-                        Texture = mineTexture[2];
+                        myTexture = mineTexture[2];
                     }
                     else
                     {
@@ -76,11 +84,11 @@ namespace Minesweeper
         {
             if (alive)
             {
-                Texture = mineTexture[4];
+                myTexture = mineTexture[4];
             }
             else if (flagged)
             {
-                Texture = mineTexture[3];
+                myTexture = mineTexture[3];
             }
         }
 
@@ -89,11 +97,11 @@ namespace Minesweeper
             alive = Input.mouseClickingToAlive;
             if (alive)
             {
-                Texture = aliveTex;
+                myTexture = aliveTex;
             }
             else
             {
-                Texture = deadTex;
+                myTexture = deadTex;
             }
         }
 
@@ -103,7 +111,7 @@ namespace Minesweeper
             if (alive)
             {
                 //Texture = aliveTex;
-                Texture = mineTexture[2];
+                myTexture = mineTexture[2];
             }
             else
             {
@@ -117,14 +125,14 @@ namespace Minesweeper
             {
                 if (!clicked)
                 {
-                    if (Texture == deadTex)
+                    if (myTexture == deadTex)
                     {
-                        Texture = mineTexture[0];
+                        myTexture = mineTexture[0];
                         flagged = true;
                     }
                     else
                     {
-                        Texture = deadTex;
+                        myTexture = deadTex;
                         flagged = false;
                     }
                 }
@@ -133,16 +141,21 @@ namespace Minesweeper
             return false;
         }
 
+        public void SetTex(Texture2D texture2D)
+        {
+            myTexture = texture2D;
+        }
+
         public void SetClicked(bool _alive)
         {
             alive = _alive;
             if (alive)
             {
-                Texture = aliveTex;
+                myTexture = aliveTex;
             }
             else
             {
-                Texture = deadTex;
+                myTexture = deadTex;
             }
         }
 
@@ -189,11 +202,11 @@ namespace Minesweeper
                 }
                 if (alive)
                 {
-                    Texture = aliveTex;
+                    myTexture = aliveTex;
                 }
                 else
                 {
-                    Texture = deadTex;
+                    myTexture = deadTex;
                 }
                 aliveToChangeToNextTurn = AliveNext.tbd;
             }
